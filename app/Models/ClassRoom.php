@@ -17,6 +17,7 @@ class ClassRoom extends Model
         'teacher_id',
         'schedule',
         'price',
+        'enrollment_code',
         'is_active'
     ];
     
@@ -63,5 +64,25 @@ class ClassRoom extends Model
     public function getStudentsCountAttribute()
     {
         return $this->students()->count();
+    }
+    
+    /**
+     * Generate unique enrollment code for regular classes
+     */
+    public static function generateEnrollmentCode()
+    {
+        do {
+            $code = strtoupper(substr(md5(time() . rand(1000, 9999)), 0, 8));
+        } while (self::where('enrollment_code', $code)->exists());
+        
+        return $code;
+    }
+    
+    /**
+     * Check if class requires enrollment code
+     */
+    public function requiresEnrollmentCode()
+    {
+        return $this->type === 'reguler';
     }
 }

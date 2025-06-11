@@ -41,9 +41,17 @@ class ClassRoomController extends Controller
             'description' => 'nullable|string',
             'type' => 'required|in:reguler,bimbel',
             'teacher_id' => 'nullable|exists:teachers,id',
+            'schedule' => 'nullable|string|max:255',
             'price' => 'nullable|numeric|min:0',
+            'enrollment_code' => 'nullable|string|max:255|unique:class_rooms,enrollment_code',
             'is_active' => 'boolean',
         ]);
+
+        // Generate enrollment code for regular classes if not provided
+        $enrollmentCode = null;
+        if ($request->type === 'reguler') {
+            $enrollmentCode = $request->enrollment_code ?: ClassRoom::generateEnrollmentCode();
+        }
 
         ClassRoom::create([
             'name' => $request->name,
@@ -51,7 +59,9 @@ class ClassRoomController extends Controller
             'description' => $request->description,
             'type' => $request->type,
             'teacher_id' => $request->teacher_id,
+            'schedule' => $request->schedule,
             'price' => $request->type === 'bimbel' ? $request->price : null,
+            'enrollment_code' => $enrollmentCode,
             'is_active' => $request->has('is_active'),
         ]);
 
@@ -92,9 +102,19 @@ class ClassRoomController extends Controller
             'description' => 'nullable|string',
             'type' => 'required|in:reguler,bimbel',
             'teacher_id' => 'nullable|exists:teachers,id',
+            'schedule' => 'nullable|string|max:255',
             'price' => 'nullable|numeric|min:0',
+            'enrollment_code' => 'nullable|string|max:255|unique:class_rooms,enrollment_code,' . $classRoom->id,
             'is_active' => 'boolean',
         ]);
+
+        // Handle enrollment code for regular classes
+        $enrollmentCode = $classRoom->enrollment_code;
+        if ($request->type === 'reguler') {
+            $enrollmentCode = $request->enrollment_code ?: ($classRoom->enrollment_code ?: ClassRoom::generateEnrollmentCode());
+        } else {
+            $enrollmentCode = null;
+        }
 
         $classRoom->update([
             'name' => $request->name,
@@ -102,7 +122,9 @@ class ClassRoomController extends Controller
             'description' => $request->description,
             'type' => $request->type,
             'teacher_id' => $request->teacher_id,
+            'schedule' => $request->schedule,
             'price' => $request->type === 'bimbel' ? $request->price : null,
+            'enrollment_code' => $enrollmentCode,
             'is_active' => $request->has('is_active'),
         ]);
 
@@ -181,5 +203,34 @@ class ClassRoomController extends Controller
 
         return redirect()->route('admin.classrooms.show', $classRoom)
             ->with('success', 'Student added to class successfully.');
+    }
+    
+    /**
+     * Enroll student to regular class using enrollment code
+     */
+    public function enrollWithCode(Request $request)
+    {
+        $request->validate([
+            'enrollment_code' => 'required|string|exists:class_rooms,enrollment_code',
+            'student_id' => 'required|exists:students,id',
+        ]);
+
+        $classRoom = ClassRoom::where('enrollment_code', $request->enrollment_code)
+            ->where('type', 'reguler')
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $student = Student::findOrFail($request->student_id);
+        
+        // Check if already enrolled
+        if ($classRoom->students()->where('student_id', $student->id)->exists()) {
+            return redirect()->back()
+                ->withErrors(['enrollment_code' => 'Siswa sudah terdaftar di kelas ini.']);
+        }
+
+        $classRoom->students()->attach($student->id);
+
+        return redirect()->back()
+            ->with('success', 'Berhasil bergabung ke kelas: ' . $classRoom->name);
     }
 }

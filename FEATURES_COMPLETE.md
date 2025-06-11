@@ -60,6 +60,9 @@ Sistem admin E-learning yang komprehensif dibangun dengan Laravel 11, menampilka
 -   ✅ Harga dinamis untuk kelas tipe bimbel
 -   ✅ Manajemen pendaftaran siswa
 -   ✅ Field jadwal dan deskripsi
+-   ✅ **Sistem kode enrollment untuk kelas reguler**
+-   ✅ **Generate kode enrollment otomatis**
+-   ✅ **Copy kode enrollment ke clipboard**
 -   ✅ Interface dalam Bahasa Indonesia
 
 ### 7. Manajemen Pembayaran (CRUD Lengkap)
@@ -104,7 +107,19 @@ Sistem admin E-learning yang komprehensif dibangun dengan Laravel 11, menampilka
 -   ✅ 5 pembayaran contoh dengan status berbeda
 -   ✅ Pendaftaran kelas dan relasi
 
-### 11. Perbaikan Teknis
+### 12. Sistem Enrollment Kode (BARU)
+
+-   ✅ **Kode enrollment untuk kelas reguler saja**
+-   ✅ **Generate kode enrollment otomatis untuk kelas baru**
+-   ✅ **Input manual kode enrollment dengan validasi unik**
+-   ✅ **Interface siswa untuk bergabung dengan kode**
+-   ✅ **Validasi kode enrollment (reguler, aktif, belum terdaftar)**
+-   ✅ **Tampilan kode enrollment di dashboard admin**
+-   ✅ **Copy kode ke clipboard dengan animasi**
+-   ✅ **Siswa dapat keluar dari kelas reguler**
+-   ✅ **Layout khusus untuk student portal**
+
+### 13. Perbaikan Teknis
 
 -   ✅ Konflik CSS diperbaiki dengan sintaks kondisional yang benar
 -   ✅ Nilai enum database disesuaikan ("regular" → "reguler")
@@ -140,7 +155,7 @@ users (id, name, email, phone, role, password, timestamps)
 ├── students (user_id, student_id, date_of_birth, address)
 └── payments (approved_by → users.id)
 
-class_rooms (id, name, subject, description, type, teacher_id, schedule, price, is_active)
+class_rooms (id, name, subject, description, type, teacher_id, schedule, price, enrollment_code, is_active)
 ├── teacher → teachers
 ├── students (many-to-many via class_student)
 └── payments
@@ -213,6 +228,7 @@ admin/
 8. **Harga Berdasarkan Tipe**: Strategi harga berbeda untuk tipe kelas
 9. **Interface Bahasa Indonesia**: Semua interface menggunakan Bahasa Indonesia
 10. **Routing yang Konsisten**: Parameter route yang konsisten dan tidak ada error
+11. **🆕 Sistem Enrollment Kode**: Kode enrollment unik untuk akses kelas reguler gratis
 
 ## 🔮 Siap untuk Pengembangan
 

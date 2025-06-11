@@ -47,11 +47,24 @@
                             {{ $classRoom->type === 'bimbel' ? 'Bimbel' : 'Reguler' }}
                         </span>
                     </div>
-                    
-                    @if($classRoom->type === 'bimbel' && $classRoom->price)
+                      @if($classRoom->type === 'bimbel' && $classRoom->price)
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Harga</label>
                         <p class="text-gray-900">Rp {{ number_format($classRoom->price, 0, ',', '.') }}</p>
+                    </div>
+                    @endif
+                    
+                    @if($classRoom->type === 'reguler' && $classRoom->enrollment_code)
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Kode Enrollment</label>
+                        <div class="flex items-center space-x-2">
+                            <p class="text-gray-900 font-mono bg-gray-100 px-3 py-1 rounded border">{{ $classRoom->enrollment_code }}</p>
+                            <button onclick="copyToClipboard('{{ $classRoom->enrollment_code }}')" 
+                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                📋 Salin
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Siswa dapat menggunakan kode ini untuk bergabung ke kelas reguler</p>
                     </div>
                     @endif
                     
@@ -274,6 +287,24 @@ function openAddStudentModal() {
 
 function closeAddStudentModal() {
     document.getElementById('addStudentModal').classList.add('hidden');
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Show success message
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '✓ Disalin';
+        button.classList.add('text-green-600');
+        
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('text-green-600');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Gagal menyalin kode');
+    });
 }
 </script>
 @endsection

@@ -45,6 +45,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     // Additional payment actions
     Route::patch('payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
     Route::patch('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+    
+    // Enrollment with code
+    Route::post('classrooms/enroll-with-code', [ClassRoomController::class, 'enrollWithCode'])->name('classrooms.enrollWithCode');
 });
 
 Route::middleware('auth')->group(function () {
@@ -58,6 +61,13 @@ Route::middleware('auth')->group(function () {
     
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Student enrollment routes
+    Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
+        Route::get('/enrollment', [App\Http\Controllers\Student\EnrollmentController::class, 'index'])->name('enrollment.index');
+        Route::post('/enrollment', [App\Http\Controllers\Student\EnrollmentController::class, 'store'])->name('enrollment.store');
+        Route::delete('/enrollment/{classRoom}', [App\Http\Controllers\Student\EnrollmentController::class, 'leave'])->name('enrollment.leave');
+    });
 });
 
 require __DIR__.'/auth.php';

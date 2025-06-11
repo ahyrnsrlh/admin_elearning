@@ -4,7 +4,7 @@
 <div class="space-y-6">    <!-- Header -->
     <div class="bg-white shadow rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-900">Dasbor Admin</h1>
-        <p class="text-gray-600">Selamat datang di Sistem Manajemen E-Learning</p>
+        <p class="text-gray-600">Selamat datang di Sistem Manajemen E-Learning Gclassy</p>
     </div>
 
     <!-- Stats Cards -->
